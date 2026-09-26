@@ -1,0 +1,19 @@
+{
+    "KPackageStructure": "Plasma/Wallpaper",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "robymus@gmail.com",
+                "Name": "robymus"
+            }
+        ],
+        "Description": "A different image for each virtual desktop, switched instantly",
+        "Icon": "preferences-desktop-wallpaper",
+        "Id": "local.vdwallpaper",
+        "License": "Unlicense",
+        "Name": "Virtual Desktop Wallpaper",
+        "Version": "1.0"
+    },
+    "X-KDE-ParentApp": "org.kde.plasmashell",
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

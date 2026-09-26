@@ -1,0 +1,34 @@
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    # Debian trixie ships the Qt 6.8 / Plasma 6.3 the plugin targets.
+    container: debian:trixie
+    steps:
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            ca-certificates git shellcheck \
+            qt6-declarative-dev-tools \
+            qml6-module-qtquick qml6-module-qtquick-controls qml6-module-qtquick-dialogs \
+            qml6-module-qtquick-layouts qml6-module-qtcore qml6-module-qttest \
+            qml6-module-org-kde-kirigami qml6-module-org-kde-kquickcontrols \
+            plasma-workspace
+
+      - uses: actions/checkout@v4
+
+      - name: shellcheck
+        run: shellcheck check.sh install.sh
+
+      - name: Lint and test
+        run: ./check.sh
