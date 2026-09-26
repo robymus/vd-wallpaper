@@ -2,7 +2,6 @@ name: check
 
 on:
   push:
-    branches: [main]
   pull_request:
 
 permissions:
@@ -22,10 +21,18 @@ jobs:
             qt6-declarative-dev-tools \
             qml6-module-qtquick qml6-module-qtquick-controls qml6-module-qtquick-dialogs \
             qml6-module-qtquick-layouts qml6-module-qtcore qml6-module-qttest \
-            qml6-module-org-kde-kirigami qml6-module-org-kde-kquickcontrols \
-            plasma-workspace
+            qml6-module-org-kde-kirigami qml6-module-org-kde-kquickcontrols
 
-      - uses: actions/checkout@v4
+      # org.kde.taskmanager only ships in plasma-workspace, whose dependencies are most
+      # of a desktop. qmllint only reads the module's qmltypes, so unpack just that.
+      - name: Extract org.kde.taskmanager QML module
+        run: |
+          cd "$(mktemp -d)"
+          apt-get download plasma-workspace
+          dpkg-deb --fsys-tarfile plasma-workspace_*.deb \
+            | tar -x -C / ./usr/lib/x86_64-linux-gnu/qt6/qml/org/kde/taskmanager
+
+      - uses: actions/checkout@v5
 
       - name: shellcheck
         run: shellcheck check.sh install.sh

@@ -62,7 +62,8 @@ Desktop UUIDs: `qdbus6 --literal org.kde.KWin /VirtualDesktopManager org.kde.KWi
 package/                  the KPackage installed by install.sh
   metadata.json
   contents/config/main.xml   config schema
-  contents/ui/main.qml       the wallpaper
+  contents/ui/main.qml       Plasma entry point, a thin WallpaperItem wrapper
+  contents/ui/WallpaperView.qml  the wallpaper itself
   contents/ui/config.qml     settings page
   contents/code/images.js    DesktopImages parsing/editing (unit tested)
 tests/tst_images.qml      qmltestrunner tests for images.js
@@ -79,14 +80,17 @@ Notes:
 
 - `org.kde.plasma.plasmoid` (`WallpaperItem`) is provided by plasmashell at runtime and
   has no type info on disk, so `main.qml` disables the `import`, `unresolved-type` and
-  `missing-property` lint categories; everything else is linted.
+  `missing-property` lint categories. It is kept to a few lines for that reason; all
+  logic is in `WallpaperView.qml`, which is fully linted.
+- CI doesn't install `plasma-workspace` (it drags in most of a desktop) just for the
+  `org.kde.taskmanager` type info; it unpacks that one directory from the .deb.
 - qmllint 6.8 segfaults on `.js` files when `--max-warnings` is set, so `check.sh` lints
   those without it and fails on any output instead.
 - Strings use `qsTr` rather than KDE's `i18n` (no translations, and qmllint knows `qsTr`).
 - Runtime errors show up in `journalctl --user -u plasma-plasmashell | grep vdwallpaper`.
 
 CI (`.github/workflows/check.yml`) runs shellcheck and `check.sh` in a Debian trixie
-container on every push to `main` and on pull requests.
+container on every push and pull request.
 
 Tested on Plasma 6.3.6 / Qt 6.8.2 (Debian trixie).
 
